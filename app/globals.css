@@ -1,6 +1,18 @@
 @import "tailwindcss";
 
+/* Our theme: these become Tailwind classes like bg-page, text-accent, font-display */
+@theme inline {
+  --color-page: #0b0b0d;
+  --color-card: #131316;
+  --color-line: #26262b;
+  --color-accent: #ccff00;
+  --color-muted: #9a9aa2;
+
+  --font-display: var(--font-oswald), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+}
+
 body {
-  background-color: #0b0b0d;
+  background-color: var(--color-page);
   color: #ffffff;
 }
