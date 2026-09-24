@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { usePlan } from "@/context/PlanContext";
 
 const links = [
   { href: "/", label: "Workout" },
@@ -20,10 +21,11 @@ function isActive(href, pathname) {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { planIds, savedIds } = usePlan();
 
-  // Temporary numbers. In Commit 5 these will come from real shared state.
-  const planCount = 0;
-  const savedCount = 0;
+  // The badge numbers are simply how many items are in each list
+  const planCount = planIds.length;
+  const savedCount = savedIds.length;
 
   return (
     <header className="border-line bg-page/90 sticky top-0 z-50 border-b backdrop-blur">
@@ -59,7 +61,7 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Right: Plan and Saved counters */}
+        {/* Right: Plan and Saved counters (both go to /my-plan) */}
         <div className="flex items-center justify-end gap-2">
           <Link
             href="/my-plan"
