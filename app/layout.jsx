@@ -1,5 +1,6 @@
 import { Inter, Oswald } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 const inter = Inter({
@@ -22,10 +23,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${oswald.variable} font-body antialiased`}
+        className={`${inter.variable} ${oswald.variable} font-body flex min-h-screen flex-col antialiased`}
       >
         <Navbar />
-        {children}
+        <div className="flex-1">{children}</div>
+        <Footer />
       </body>
     </html>
   );
