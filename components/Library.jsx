@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getWorkouts } from "@/lib/api";
 import LibrarySkeleton from "@/components/LibrarySkeleton";
+import WorkoutCard from "@/components/WorkoutCard";
 
 export default function Library() {
   const [workouts, setWorkouts] = useState([]);
@@ -19,14 +20,11 @@ export default function Library() {
     return <LibrarySkeleton />;
   }
 
-  // Temporary plain list. Commit 8 replaces this with real workout cards.
   return (
-    <ul className="mt-6 space-y-2">
+    <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {workouts.map((workout) => (
-        <li key={workout.id} className="text-muted text-sm">
-          {workout.name}
-        </li>
+        <WorkoutCard key={workout.id} workout={workout} />
       ))}
-    </ul>
+    </div>
   );
 }
