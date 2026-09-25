@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { usePlan } from "@/context/PlanContext";
 
 const links = [
@@ -13,7 +13,6 @@ const links = [
 // Decides which link should look highlighted
 function isActive(href, pathname) {
   if (href === "/") {
-    // "Workout" is active on the home page and on any workout detail page
     return pathname === "/" || pathname.startsWith("/workout");
   }
   return pathname.startsWith(href);
@@ -21,11 +20,19 @@ function isActive(href, pathname) {
 
 export default function Navbar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { planIds, savedIds } = usePlan();
 
-  // The badge numbers are simply how many items are in each list
   const planCount = planIds.length;
   const savedCount = savedIds.length;
+
+  const isOnMyPlan = pathname.startsWith("/my-plan");
+  const currentTab = searchParams.get("tab") || "plan";
+
+  // "Saved" only lights up when you're actually on the Saved tab.
+  // "Plan" lights up by default, and dims only when Saved is active.
+  const savedIsActive = isOnMyPlan && currentTab === "saved";
+  const planIsActive = !savedIsActive;
 
   return (
     <header className="border-line bg-page/90 sticky top-0 z-50 border-b backdrop-blur">
@@ -61,17 +68,25 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* Right: Plan and Saved counters (both go to /my-plan) */}
+        {/* Right: Plan and Saved counters, each opening the matching tab */}
         <div className="flex items-center justify-end gap-2">
           <Link
-            href="/my-plan"
-            className="bg-accent flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-black"
+            href="/my-plan?tab=plan"
+            className={
+              planIsActive
+                ? "bg-accent flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-black"
+                : "border-muted flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold text-white"
+            }
           >
             Plan <span>{planCount}</span>
           </Link>
           <Link
-            href="/my-plan"
-            className="border-muted flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold text-white"
+            href="/my-plan?tab=saved"
+            className={
+              savedIsActive
+                ? "bg-accent flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-black"
+                : "border-muted flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold text-white"
+            }
           >
             Saved <span>{savedCount}</span>
           </Link>

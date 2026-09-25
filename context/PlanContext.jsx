@@ -10,8 +10,9 @@ const MAX_PLAN = 5;
 export function PlanProvider({ children }) {
   const [planIds, setPlanIds] = useState([]);
   const [savedIds, setSavedIds] = useState([]);
+  const [doneIds, setDoneIds] = useState([]);
 
-  // Returns "added", "duplicate" or "full" so the caller can show the right toast later
+  // Returns "added", "duplicate" or "full" so the caller can show the right toast
   function addToPlan(id) {
     if (planIds.includes(id)) return "duplicate";
     if (planIds.length >= MAX_PLAN) return "full";
@@ -28,21 +29,32 @@ export function PlanProvider({ children }) {
 
   function removeFromPlan(id) {
     setPlanIds(planIds.filter((planId) => planId !== id));
+    setDoneIds(doneIds.filter((doneId) => doneId !== id));
   }
 
   function removeFromSaved(id) {
     setSavedIds(savedIds.filter((savedId) => savedId !== id));
   }
 
+  // Returns "marked" or "already-done"
+  function markAsDone(id) {
+    if (doneIds.includes(id)) return "already-done";
+    setDoneIds([...doneIds, id]);
+    return "marked";
+  }
+
   const value = {
     planIds,
     savedIds,
+    doneIds,
     addToPlan,
     saveForLater,
     removeFromPlan,
     removeFromSaved,
+    markAsDone,
     maxPlan: MAX_PLAN,
   };
+
   return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
 }
 

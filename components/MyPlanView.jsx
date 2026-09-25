@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
 import { getWorkouts } from "@/lib/api";
 import { usePlan } from "@/context/PlanContext";
 import PlanMetrics from "@/components/PlanMetrics";
@@ -9,10 +11,29 @@ import PlanCard from "@/components/PlanCard";
 import PlanEmptyState from "@/components/PlanEmptyState";
 
 export default function MyPlanView() {
-  const { planIds, savedIds, removeFromPlan, removeFromSaved } = usePlan();
+  const {
+    planIds,
+    savedIds,
+    doneIds,
+    removeFromPlan,
+    removeFromSaved,
+    markAsDone,
+  } = usePlan();
   const [allWorkouts, setAllWorkouts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("plan");
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Which tab to start on comes from the URL: /my-plan?tab=saved
+  const tabFromUrl = searchParams.get("tab") === "saved" ? "saved" : "plan";
+  const [activeTab, setActiveTab] = useState(tabFromUrl);
+
+  // Keep the page in sync if the URL changes (e.g. clicking the navbar badge
+  // while already on /my-plan)
+  useEffect(() => {
+    setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
 
   useEffect(() => {
     getWorkouts()
@@ -20,6 +41,12 @@ export default function MyPlanView() {
       .catch((error) => console.error(error))
       .finally(() => setIsLoading(false));
   }, []);
+
+  // When the user clicks a tab on the page, update both the state and the URL
+  function handleTabChange(tab) {
+    setActiveTab(tab);
+    router.replace(`/my-plan?tab=${tab}`, { scroll: false });
+  }
 
   // Turn the stored ids into full workout objects
   const planWorkouts = allWorkouts.filter((w) => planIds.includes(w.id));
@@ -35,7 +62,23 @@ export default function MyPlanView() {
 
   const isPlanTab = activeTab === "plan";
   const visibleWorkouts = isPlanTab ? planWorkouts : savedWorkouts;
-  const handleRemove = isPlanTab ? removeFromPlan : removeFromSaved;
+
+  function handleRemove(id) {
+    if (isPlanTab) {
+      removeFromPlan(id);
+      toast("Removed from today's plan");
+    } else {
+      removeFromSaved(id);
+      toast("Removed from saved");
+    }
+  }
+
+  function handleMarkDone(id) {
+    const result = markAsDone(id);
+    if (result === "marked") {
+      toast.success("Marked as done!");
+    }
+  }
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
@@ -50,7 +93,7 @@ export default function MyPlanView() {
         calories={calories}
       />
 
-      <PlanTabs activeTab={activeTab} onChange={setActiveTab} />
+      <PlanTabs activeTab={activeTab} onChange={handleTabChange} />
 
       <div className="mt-6">
         {isLoading ? (
@@ -64,6 +107,9 @@ export default function MyPlanView() {
                 key={workout.id}
                 workout={workout}
                 onRemove={handleRemove}
+                showMarkDone={isPlanTab}
+                isDone={doneIds.includes(workout.id)}
+                onMarkDone={handleMarkDone}
               />
             ))}
           </div>
