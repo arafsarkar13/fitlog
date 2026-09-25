@@ -25,15 +25,10 @@ export default function MyPlanView() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Which tab to start on comes from the URL: /my-plan?tab=saved
-  const tabFromUrl = searchParams.get("tab") === "saved" ? "saved" : "plan";
-  const [activeTab, setActiveTab] = useState(tabFromUrl);
-
-  // Keep the page in sync if the URL changes (e.g. clicking the navbar badge
-  // while already on /my-plan)
-  useEffect(() => {
-    setActiveTab(tabFromUrl);
-  }, [tabFromUrl]);
+  // The URL is the single source of truth for which tab is active.
+  // No extra useState/useEffect needed to "copy" it into local state.
+  const activeTab = searchParams.get("tab") === "saved" ? "saved" : "plan";
+  const isPlanTab = activeTab === "plan";
 
   useEffect(() => {
     getWorkouts()
@@ -42,9 +37,8 @@ export default function MyPlanView() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // When the user clicks a tab on the page, update both the state and the URL
+  // Clicking a tab just updates the URL; the derived `activeTab` above follows
   function handleTabChange(tab) {
-    setActiveTab(tab);
     router.replace(`/my-plan?tab=${tab}`, { scroll: false });
   }
 
@@ -60,7 +54,6 @@ export default function MyPlanView() {
     0,
   );
 
-  const isPlanTab = activeTab === "plan";
   const visibleWorkouts = isPlanTab ? planWorkouts : savedWorkouts;
 
   function handleRemove(id) {
