@@ -1,4 +1,3 @@
-// Three stat cards: Exercises, Minutes, Calories — all totaled from Today's Plan
 export default function PlanMetrics({ exercises, minutes, calories }) {
   const stats = [
     { label: "Exercises", value: exercises },
