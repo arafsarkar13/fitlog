@@ -1,6 +1,7 @@
 import { Inter, Oswald } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Toast from "@/components/Toast";
 import { PlanProvider } from "@/context/PlanContext";
 import "./globals.css";
 
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           <div className="flex-1">{children}</div>
           <Footer />
+          <Toast />
         </PlanProvider>
       </body>
     </html>

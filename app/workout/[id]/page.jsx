@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { CalendarPlus, Bookmark } from "lucide-react";
 import { getWorkoutById } from "@/lib/api";
+import DetailActions from "@/components/DetailActions";
 
 export default async function WorkoutDetailPage({ params }) {
   const { id } = await params;
@@ -96,17 +96,8 @@ export default async function WorkoutDetailPage({ params }) {
             ))}
           </ol>
 
-          {/* Call-to-action buttons (wired up in Commit 10) */}
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button className="bg-accent flex items-center gap-2 rounded-md px-5 py-3 text-xs font-bold tracking-wide text-black transition hover:brightness-110">
-              <CalendarPlus size={16} />
-              Add to today&apos;s plan
-            </button>
-            <button className="border-muted flex items-center gap-2 rounded-md border px-5 py-3 text-xs font-semibold tracking-wide transition hover:border-white">
-              <Bookmark size={16} />
-              Save for later
-            </button>
-          </div>
+          {/* Add to plan / Save for later buttons, with toasts and the 5-lift cap */}
+          <DetailActions workoutId={workout.id} />
         </div>
       </div>
     </main>
