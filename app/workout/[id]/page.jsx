@@ -74,7 +74,7 @@ export default async function WorkoutDetailPage({ params }) {
           </div>
 
           {/* Key specs panel */}
-          <div className="border-line bg-card mt-6 divide-y divide-[var(--color-line)] rounded-xl border">
+          <div className="border-line bg-card divide-line mt-6 divide-y rounded-xl border">
             {specs.map((spec) => (
               <div
                 key={spec.label}
