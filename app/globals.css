@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Our theme: these become Tailwind classes like bg-page, text-accent, font-display */
 @theme inline {
   --color-page: #0b0b0d;
   --color-card: #131316;

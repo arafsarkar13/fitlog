@@ -20,7 +20,6 @@ export default function Hero() {
             into today&apos;s plan, and watch the week&apos;s work add up.
           </p>
 
-          {/* A normal link to #library: it scrolls, it does not change the page */}
           <a
             href="#library"
             className="bg-accent mt-6 inline-flex items-center gap-2 rounded-md px-5 py-3 text-xs font-bold tracking-wide text-black transition hover:brightness-110"

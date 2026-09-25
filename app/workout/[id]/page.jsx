@@ -96,7 +96,6 @@ export default async function WorkoutDetailPage({ params }) {
             ))}
           </ol>
 
-          {/* Add to plan / Save for later buttons, with toasts and the 5-lift cap */}
           <DetailActions workoutId={workout.id} />
         </div>
       </div>

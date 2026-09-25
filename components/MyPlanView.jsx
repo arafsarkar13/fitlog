@@ -7,6 +7,7 @@ import { getWorkouts } from "@/lib/api";
 import { usePlan } from "@/context/PlanContext";
 import PlanMetrics from "@/components/PlanMetrics";
 import PlanTabs from "@/components/PlanTabs";
+import SortDropdown from "@/components/SortDropdown";
 import PlanCard from "@/components/PlanCard";
 import PlanEmptyState from "@/components/PlanEmptyState";
 
@@ -21,12 +22,12 @@ export default function MyPlanView() {
   } = usePlan();
   const [allWorkouts, setAllWorkouts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("duration");
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // The URL is the single source of truth for which tab is active.
-  // No extra useState/useEffect needed to "copy" it into local state.
   const activeTab = searchParams.get("tab") === "saved" ? "saved" : "plan";
   const isPlanTab = activeTab === "plan";
 
@@ -37,7 +38,6 @@ export default function MyPlanView() {
       .finally(() => setIsLoading(false));
   }, []);
 
-  // Clicking a tab just updates the URL; the derived `activeTab` above follows
   function handleTabChange(tab) {
     router.replace(`/my-plan?tab=${tab}`, { scroll: false });
   }
@@ -54,7 +54,13 @@ export default function MyPlanView() {
     0,
   );
 
-  const visibleWorkouts = isPlanTab ? planWorkouts : savedWorkouts;
+  const currentTabWorkouts = isPlanTab ? planWorkouts : savedWorkouts;
+
+  // Sort a copy of the list (never mutate the original array) by the chosen field,
+  // highest first — a higher duration, calorie burn or rating shows up on top
+  const visibleWorkouts = [...currentTabWorkouts].sort(
+    (a, b) => b[sortBy] - a[sortBy],
+  );
 
   function handleRemove(id) {
     if (isPlanTab) {
@@ -86,7 +92,10 @@ export default function MyPlanView() {
         calories={calories}
       />
 
-      <PlanTabs activeTab={activeTab} onChange={handleTabChange} />
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <PlanTabs activeTab={activeTab} onChange={handleTabChange} />
+        <SortDropdown sortBy={sortBy} onChange={setSortBy} />
+      </div>
 
       <div className="mt-6">
         {isLoading ? (

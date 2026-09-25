@@ -1,16 +1,50 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const PlanContext = createContext(null);
 
 // Today's plan can hold at most 5 lifts
 const MAX_PLAN = 5;
 
+// Key used in localStorage
+const STORAGE_KEY = "fitlog-plan-data";
+
 export function PlanProvider({ children }) {
   const [planIds, setPlanIds] = useState([]);
   const [savedIds, setSavedIds] = useState([]);
   const [doneIds, setDoneIds] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load saved data once, right after the app starts in the browser.
+  // localStorage only exists in the browser, so syncing it into React state
+  // here (once, on mount) is the correct pattern — not the kind of case
+  // the lint rule below is meant to catch.
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        /* eslint-disable react-hooks/set-state-in-effect */
+        setPlanIds(saved.planIds || []);
+        setSavedIds(saved.savedIds || []);
+        setDoneIds(saved.doneIds || []);
+        /* eslint-enable react-hooks/set-state-in-effect */
+      }
+    } catch (error) {
+      console.error("Could not read saved plan data:", error);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  // Write to localStorage whenever any list changes, but only after the
+  // initial load above, so we don't overwrite saved data with empty arrays
+  useEffect(() => {
+    if (!isLoaded) return;
+    const data = { planIds, savedIds, doneIds };
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [planIds, savedIds, doneIds, isLoaded]);
 
   // Returns "added", "duplicate" or "full" so the caller can show the right toast
   function addToPlan(id) {
