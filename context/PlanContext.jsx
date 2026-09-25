@@ -26,14 +26,23 @@ export function PlanProvider({ children }) {
     return "added";
   }
 
+  function removeFromPlan(id) {
+    setPlanIds(planIds.filter((planId) => planId !== id));
+  }
+
+  function removeFromSaved(id) {
+    setSavedIds(savedIds.filter((savedId) => savedId !== id));
+  }
+
   const value = {
     planIds,
     savedIds,
     addToPlan,
     saveForLater,
+    removeFromPlan,
+    removeFromSaved,
     maxPlan: MAX_PLAN,
   };
-
   return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
 }
 

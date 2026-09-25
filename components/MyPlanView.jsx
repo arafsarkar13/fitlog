@@ -5,9 +5,11 @@ import { getWorkouts } from "@/lib/api";
 import { usePlan } from "@/context/PlanContext";
 import PlanMetrics from "@/components/PlanMetrics";
 import PlanTabs from "@/components/PlanTabs";
+import PlanCard from "@/components/PlanCard";
+import PlanEmptyState from "@/components/PlanEmptyState";
 
 export default function MyPlanView() {
-  const { planIds, savedIds } = usePlan();
+  const { planIds, savedIds, removeFromPlan, removeFromSaved } = usePlan();
   const [allWorkouts, setAllWorkouts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("plan");
@@ -31,8 +33,9 @@ export default function MyPlanView() {
     0,
   );
 
-  // Which list the (future) card list should show, based on the active tab
-  const visibleWorkouts = activeTab === "plan" ? planWorkouts : savedWorkouts;
+  const isPlanTab = activeTab === "plan";
+  const visibleWorkouts = isPlanTab ? planWorkouts : savedWorkouts;
+  const handleRemove = isPlanTab ? removeFromPlan : removeFromSaved;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
@@ -49,14 +52,21 @@ export default function MyPlanView() {
 
       <PlanTabs activeTab={activeTab} onChange={setActiveTab} />
 
-      {/* Commit 12 replaces this with the real card list, loading state and empty state */}
       <div className="mt-6">
         {isLoading ? (
           <p className="text-muted text-sm">Loading workouts…</p>
+        ) : visibleWorkouts.length === 0 ? (
+          <PlanEmptyState />
         ) : (
-          <p className="text-muted text-sm">
-            {visibleWorkouts.length} workout(s) in this tab.
-          </p>
+          <div className="flex flex-col gap-4">
+            {visibleWorkouts.map((workout) => (
+              <PlanCard
+                key={workout.id}
+                workout={workout}
+                onRemove={handleRemove}
+              />
+            ))}
+          </div>
         )}
       </div>
     </main>
