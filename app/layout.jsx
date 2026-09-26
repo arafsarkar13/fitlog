@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Inter, Oswald } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -28,10 +29,10 @@ export default function RootLayout({ children }) {
         className={`${inter.variable} ${oswald.variable} font-body flex min-h-screen flex-col antialiased`}
       >
         <PlanProvider>
-          <Navbar />
 
-
-          
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
           <div className="flex-1">{children}</div>
           <Footer />
           <Toast />
