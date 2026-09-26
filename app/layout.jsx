@@ -29,6 +29,9 @@ export default function RootLayout({ children }) {
       >
         <PlanProvider>
           <Navbar />
+
+
+          
           <div className="flex-1">{children}</div>
           <Footer />
           <Toast />
